@@ -34,6 +34,8 @@ from patsy import dmatrix
 from figure_style import (
     COLORS,
     FIG_SIZES,
+    MATH_DELTA_L_AEQ,
+    MATH_LOG_PM25_RATIO,
     add_subplot_label,
     add_reference_line,
     setup_style,
@@ -116,7 +118,7 @@ def figure3_dual_boxplot(inside: pd.DataFrame) -> plt.Figure:
     ax_a.set_xticks(range(len(main_distances)))
     ax_a.set_xticklabels([str(d) for d in main_distances])
     ax_a.set_xlabel("Distance from road boundary (m)")
-    ax_a.set_ylabel("Relative noise level ΔLAeq (dB)")
+    ax_a.set_ylabel(f"Relative noise level {MATH_DELTA_L_AEQ} (dB)")
     ax_a.set_ylim(-25, 15)
     ax_a.grid(False)
     ax_a.legend(loc="upper right", fontsize=8, framealpha=0.9)
@@ -192,7 +194,7 @@ def figure3_dual_boxplot(inside: pd.DataFrame) -> plt.Figure:
     ax_b.set_xticks(range(len(main_distances)))
     ax_b.set_xticklabels([str(d) for d in main_distances])
     ax_b.set_xlabel("Distance from road boundary (m)")
-    ax_b.set_ylabel("log(PM2.5_inside / PM2.5_P1)")
+    ax_b.set_ylabel(MATH_LOG_PM25_RATIO)
     ax_b.grid(False)
     ax_b.legend(loc="upper right", fontsize=8, framealpha=0.9)
 
@@ -291,13 +293,13 @@ def figure4_dual_model_comparison(inside: pd.DataFrame) -> plt.Figure:
     add_reference_line(ax_a, 0, "h", color=COLORS["highlight"], linestyle=":", linewidth=1, alpha=0.6)
 
     ax_a.set_xlabel("Distance from road boundary (m)")
-    ax_a.set_ylabel("Relative noise level ΔLAeq (dB)")
+    ax_a.set_ylabel(f"Relative noise level {MATH_DELTA_L_AEQ} (dB)")
     ax_a.set_xlim(-2, 55)
     ax_a.set_ylim(-25, 15)
     ax_a.grid(False)
     ax_a.legend(loc="lower left", fontsize=7.5, framealpha=0.9)
     ax_a.text(
-        0.97, 0.97, "Linear preferred\n(|ΔAIC| < 2; 92.6% bootstrap)",
+        0.97, 0.97, "Linear preferred\n(|ΔAIC| < 2; 93.0% bootstrap)",
         transform=ax_a.transAxes, ha="right", va="top",
         fontsize=7.5, style="italic", color=COLORS["secondary"],
     )
@@ -345,7 +347,7 @@ def figure4_dual_model_comparison(inside: pd.DataFrame) -> plt.Figure:
     add_reference_line(ax_b, 0, "h", color=COLORS["highlight"], linestyle=":", linewidth=1, alpha=0.6)
 
     ax_b.set_xlabel("Distance from road boundary (m)")
-    ax_b.set_ylabel("log(PM2.5_inside / PM2.5_P1)")
+    ax_b.set_ylabel(MATH_LOG_PM25_RATIO)
     ax_b.set_xlim(-2, 55)
     ax_b.grid(False)
     ax_b.legend(loc="lower left", fontsize=7.5, framealpha=0.9)
