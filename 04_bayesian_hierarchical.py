@@ -55,7 +55,7 @@ import pandas as pd
 import seaborn as sns
 from scipy.stats import invgamma, invwishart
 
-from figure_style import COLORS, PARK_TYPE_COLORS, setup_style
+from figure_style import COLORS, MATH_DELTA_L_AEQ, PARK_TYPE_COLORS, setup_style
 from utils import (
     attach_baseline,
     ensure_dirs,
@@ -136,7 +136,7 @@ def plot_park_slopes_forest(
 
     ax.set_yticks(y_pos)
     ax.set_yticklabels(park_plot["sample_name"])
-    ax.set_xlabel("Slope of ΔLAeq per 10m (posterior mean and 95% CrI)")
+    ax.set_xlabel(f"Slope of {MATH_DELTA_L_AEQ} per 10 m (posterior mean and 95% CrI)")
     ax.set_ylabel("Park")
     ax.grid(False)
 
