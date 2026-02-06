@@ -1,11 +1,26 @@
 """
-Unified figure style configuration for the ISPRS IJGI manuscript.
+Unified figure style configuration for the manuscript.
 All figures should import this module to ensure consistent styling.
 """
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+
+# ============================================================================
+# COMMON MATH LABELS (Matplotlib mathtext)
+# ============================================================================
+
+# Sound pressure level notation: italic L with upright Aeq subscript.
+MATH_L_AEQ = r"$L_{\mathrm{Aeq}}$"
+MATH_DELTA_L_AEQ = r"$\Delta L_{\mathrm{Aeq}}$"
+
+# PM2.5 notation: upright PM with upright subscript.
+MATH_PM25_INTERIOR = r"$\mathrm{PM}_{2.5,\mathrm{interior}}$"
+MATH_PM25_P1 = r"$\mathrm{PM}_{2.5,\mathrm{P1}}$"
+MATH_LOG_PM25_RATIO = (
+    r"$\log\left(\mathrm{PM}_{2.5,\mathrm{interior}}/\mathrm{PM}_{2.5,\mathrm{P1}}\right)$"
+)
 
 # ============================================================================
 # COLOR PALETTE - Academic style using a cohesive blue-orange-gray scheme
