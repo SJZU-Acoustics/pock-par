@@ -48,7 +48,7 @@ from utils import (
 def cluster_bootstrap_quantreg(
     df: pd.DataFrame,
     quantiles: list[float],
-    n_boot: int = 400,
+    n_boot: int = 1000,
     seed: int = 20250118,
 ) -> pd.DataFrame:
     """
@@ -156,9 +156,9 @@ def main() -> None:
     # =========================================================================
     # Cluster bootstrap for confidence intervals
     # =========================================================================
-    print(f"\nRunning cluster bootstrap ({400} iterations)...")
+    print(f"\nRunning cluster bootstrap ({1000} iterations)...")
 
-    boot_df = cluster_bootstrap_quantreg(inside, quantiles, n_boot=400, seed=20250118)
+    boot_df = cluster_bootstrap_quantreg(inside, quantiles, n_boot=1000, seed=20250118)
     save_table(boot_df, "quantreg_bootstrap_draws.csv")
 
     # Summarize
