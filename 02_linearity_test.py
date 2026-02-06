@@ -114,7 +114,7 @@ def fit_piecewise(df: pd.DataFrame, breakpoint: float) -> dict:
 def cluster_bootstrap_model_selection(
     df: pd.DataFrame,
     candidates: list[float],
-    n_boot: int = 500,
+    n_boot: int = 1000,
     seed: int = 20250118,
 ) -> pd.DataFrame:
     """
@@ -328,7 +328,7 @@ def main() -> None:
     # =========================================================================
     # Part 2: Piecewise regression with bootstrap model selection
     # =========================================================================
-    print("\nRunning piecewise regression bootstrap (500 iterations)...")
+    print("\nRunning piecewise regression bootstrap (1000 iterations)...")
 
     # Define candidate breakpoints (distances with sufficient observations)
     dist_counts = inside["distance_m"].value_counts().sort_index()
@@ -344,7 +344,7 @@ def main() -> None:
 
     # Run bootstrap
     boot_results = cluster_bootstrap_model_selection(
-        inside, candidates, n_boot=500, seed=20250118
+        inside, candidates, n_boot=1000, seed=20250118
     )
     save_table(boot_results, "piecewise_bootstrap_results.csv")
 
