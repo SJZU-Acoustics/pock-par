@@ -1,4 +1,4 @@
-# Analysis Code for "Spatial Attenuation of Noise and PM2.5 in Roadside Pocket Parks"
+# Analysis Code for "Spatial attenuation of noise and PM2.5 in roadside pocket parks"
 
 This repository contains the Python code for reproducing the statistical analyses presented in the paper.
 
