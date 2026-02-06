@@ -380,7 +380,7 @@ def mixed_effects_heterogeneity(inside: pd.DataFrame) -> pd.DataFrame:
 # =========================================================================
 
 def quantile_regression(
-    inside: pd.DataFrame, n_boot: int = 400, seed: int = 42
+    inside: pd.DataFrame, n_boot: int = 1000, seed: int = 42
 ) -> pd.DataFrame:
     """Quantile regression for PM2.5 logratio across distribution."""
     df = inside.dropna(subset=["logratio_PM2.5", "distance10"]).copy()
@@ -529,7 +529,7 @@ def comparative_summary(
         },
         {
             "dimension": "Bootstrap model stability",
-            "noise": "92.6% select linear",
+            "noise": "93.0% select linear",
             "pm25": f"{pm25_linear_share:.1%} select linear",
         },
         {
@@ -688,7 +688,7 @@ def main() -> None:
     slopes = mixed_effects_heterogeneity(inside)
 
     # 6. Quantile regression
-    qr_df = quantile_regression(inside, n_boot=400)
+    qr_df = quantile_regression(inside, n_boot=1000)
 
     # 7. Comparative summary
     comparison = comparative_summary(
