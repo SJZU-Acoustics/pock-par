@@ -390,8 +390,20 @@ def main() -> None:
 
     # Plot 1: ROC curves comparison
     ax = axes[0]
-    ax.plot(fpr, tpr, color="#4C78A8", lw=2, label=f"LAeq≤55, AUC={roc_auc:.3f}")
-    ax.plot(fpr60, tpr60, color="#F58518", lw=2, label=f"LAeq≤60, AUC={roc_auc60:.3f}")
+    ax.plot(
+        fpr,
+        tpr,
+        color="#4C78A8",
+        lw=2,
+        label=rf"$L_{{\mathrm{{Aeq}}}}\leq55$, AUC={roc_auc:.3f}",
+    )
+    ax.plot(
+        fpr60,
+        tpr60,
+        color="#F58518",
+        lw=2,
+        label=rf"$L_{{\mathrm{{Aeq}}}}\leq60$, AUC={roc_auc60:.3f}",
+    )
     ax.plot(fpr_full, tpr_full, color="#E45756", lw=2, ls="--",
             label=f"+ParkType, AUC={roc_auc_full:.3f}")
     ax.plot([0, 1], [0, 1], "k--", lw=1, alpha=0.5)
@@ -406,9 +418,9 @@ def main() -> None:
     # Plot 2: Compliance rate by distance
     ax = axes[1]
     ax.plot(comply_by_dist["distance_m"], comply_by_dist["comply_55_pct"],
-            "o-", color="#4C78A8", lw=2, markersize=8, label="LAeq≤55")
+            "o-", color="#4C78A8", lw=2, markersize=8, label=r"$L_{\mathrm{Aeq}}\leq55$")
     ax.plot(comply_by_dist["distance_m"], comply_by_dist["comply_60_pct"],
-            "s-", color="#F58518", lw=2, markersize=8, label="LAeq≤60")
+            "s-", color="#F58518", lw=2, markersize=8, label=r"$L_{\mathrm{Aeq}}\leq60$")
     if not np.isnan(optimal_distance):
         ax.axvline(optimal_distance, ls="--", color="#E45756", lw=2,
                    label=f"Optimal={optimal_distance:.0f}m")
@@ -424,8 +436,20 @@ def main() -> None:
     dist_range = np.linspace(0, 50, 100).reshape(-1, 1)
     prob_55 = lr.predict_proba(dist_range)[:, 1]
     prob_60 = lr60.predict_proba(dist_range)[:, 1]
-    ax.plot(dist_range, prob_55 * 100, color="#4C78A8", lw=2, label="P(LAeq≤55)")
-    ax.plot(dist_range, prob_60 * 100, color="#F58518", lw=2, label="P(LAeq≤60)")
+    ax.plot(
+        dist_range,
+        prob_55 * 100,
+        color="#4C78A8",
+        lw=2,
+        label=r"$\mathrm{P}(L_{\mathrm{Aeq}}\leq55)$",
+    )
+    ax.plot(
+        dist_range,
+        prob_60 * 100,
+        color="#F58518",
+        lw=2,
+        label=r"$\mathrm{P}(L_{\mathrm{Aeq}}\leq60)$",
+    )
     ax.axhline(50, ls="--", color="gray", alpha=0.5)
     if not np.isnan(optimal_distance):
         ax.axvline(optimal_distance, ls="--", color="#E45756", lw=1.5, alpha=0.7)
