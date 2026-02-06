@@ -37,7 +37,7 @@ import pandas as pd
 import seaborn as sns
 import statsmodels.formula.api as smf
 
-from figure_style import COLORS, add_subplot_label, add_reference_line, setup_style
+from figure_style import COLORS, MATH_DELTA_L_AEQ, add_subplot_label, add_reference_line, setup_style
 from utils import (
     attach_baseline,
     ensure_dirs,
@@ -164,97 +164,108 @@ def main() -> None:
     # =========================================================================
     # Visualization: Simple slopes
     # =========================================================================
-    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
+    font_rc = {
+        "font.size": 12,
+        "axes.titlesize": 13,
+        "axes.labelsize": 12,
+        "xtick.labelsize": 11,
+        "ytick.labelsize": 11,
+        "legend.fontsize": 11,
+        "legend.title_fontsize": 12,
+    }
 
-    # Plot 1: By Park Type
-    if "parktype" in results:
-        ax = axes[0]
-        m = results["parktype"]
-        colors = {"Large": "#4C78A8", "Medium": "#F58518", "Small": "#E45756"}
+    with plt.rc_context(font_rc):
+        fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
 
-        for ptype in ["Large", "Medium", "Small"]:
-            if ptype == "Large":
-                slope = float(m.fe_params["distance10"])
-                intercept = float(m.fe_params["Intercept"])
-            else:
-                slope = float(m.fe_params["distance10"]) + float(
-                    m.fe_params.get(f"distance10:C(ParkType)[T.{ptype}]", 0)
+        # Plot 1: By Park Type
+        if "parktype" in results:
+            ax = axes[0]
+            m = results["parktype"]
+            colors = {"Large": "#4C78A8", "Medium": "#F58518", "Small": "#E45756"}
+
+            for ptype in ["Large", "Medium", "Small"]:
+                if ptype == "Large":
+                    slope = float(m.fe_params["distance10"])
+                    intercept = float(m.fe_params["Intercept"])
+                else:
+                    slope = float(m.fe_params["distance10"]) + float(
+                        m.fe_params.get(f"distance10:C(ParkType)[T.{ptype}]", 0)
+                    )
+                    intercept = float(m.fe_params["Intercept"]) + float(
+                        m.fe_params.get(f"C(ParkType)[T.{ptype}]", 0)
+                    )
+                x = np.array([0, 5])
+                y = intercept + slope * x
+                ax.plot(
+                    x,
+                    y,
+                    label=f"{ptype} ({slope:.2f} dB/10m)",
+                    color=colors[ptype],
+                    lw=2.5,
                 )
-                intercept = float(m.fe_params["Intercept"]) + float(
-                    m.fe_params.get(f"C(ParkType)[T.{ptype}]", 0)
+
+            ax.set_xlabel("Distance (10 m units)")
+            ax.set_ylabel(f"{MATH_DELTA_L_AEQ} (dB)")
+            ax.legend(frameon=False)
+            add_reference_line(
+                ax,
+                0,
+                "h",
+                color=COLORS["highlight"],
+                linestyle="--",
+                linewidth=1,
+                alpha=0.6,
+            )
+            ax.set_xlim(0, 5)
+            ax.grid(False)
+            add_subplot_label(ax, "a", fontsize=14)
+
+        # Plot 2: By Area percentiles
+        if "area" in results:
+            ax = axes[1]
+            m = results["area"]
+
+            b0 = float(m.fe_params.get("Intercept", 0.0))
+            b_area = float(m.fe_params.get("area_1000", 0.0))
+            b_dist = float(m.fe_params.get("distance10", 0.0))
+            b_int = float(m.fe_params.get("distance10:area_1000", 0.0))
+
+            area_pcts = inside["area_1000"].quantile([0.25, 0.50, 0.75])
+            colors = {"25th": COLORS["small"], "50th": COLORS["medium"], "75th": COLORS["large"]}
+
+            for pct_label, a in zip(["25th", "50th", "75th"], area_pcts.to_numpy()):
+                a = float(a)
+                slope = b_dist + b_int * a
+                intercept = b0 + b_area * a
+                x = np.array([0, 5])
+                y = intercept + slope * x
+                ax.plot(
+                    x,
+                    y,
+                    label=f"{int(round(a * 1000)):,} m² ({pct_label}; {slope:.2f} dB/10m)",
+                    color=colors[pct_label],
+                    lw=2.5,
                 )
-            x = np.array([0, 5])
-            y = intercept + slope * x
-            ax.plot(
-                x,
-                y,
-                label=f"{ptype} ({slope:.2f} dB/10m)",
-                color=colors[ptype],
-                lw=2.5,
+
+            ax.set_xlabel("Distance (10 m units)")
+            ax.set_ylabel(f"{MATH_DELTA_L_AEQ} (dB)")
+            ax.legend(frameon=False)
+            add_reference_line(
+                ax,
+                0,
+                "h",
+                color=COLORS["highlight"],
+                linestyle="--",
+                linewidth=1,
+                alpha=0.6,
             )
+            ax.set_xlim(0, 5)
+            ax.grid(False)
+            add_subplot_label(ax, "b", fontsize=14)
 
-        ax.set_xlabel("Distance (10 m units)")
-        ax.set_ylabel("ΔLAeq (dB)")
-        ax.legend(frameon=False, fontsize=9)
-        add_reference_line(
-            ax,
-            0,
-            "h",
-            color=COLORS["highlight"],
-            linestyle="--",
-            linewidth=1,
-            alpha=0.6,
-        )
-        ax.set_xlim(0, 5)
-        ax.grid(False)
-        add_subplot_label(ax, "a")
-
-    # Plot 2: By Area percentiles
-    if "area" in results:
-        ax = axes[1]
-        m = results["area"]
-
-        b0 = float(m.fe_params.get("Intercept", 0.0))
-        b_area = float(m.fe_params.get("area_1000", 0.0))
-        b_dist = float(m.fe_params.get("distance10", 0.0))
-        b_int = float(m.fe_params.get("distance10:area_1000", 0.0))
-
-        area_pcts = inside["area_1000"].quantile([0.25, 0.50, 0.75])
-        colors = {"25th": COLORS["small"], "50th": COLORS["medium"], "75th": COLORS["large"]}
-
-        for pct_label, a in zip(["25th", "50th", "75th"], area_pcts.to_numpy()):
-            a = float(a)
-            slope = b_dist + b_int * a
-            intercept = b0 + b_area * a
-            x = np.array([0, 5])
-            y = intercept + slope * x
-            ax.plot(
-                x,
-                y,
-                label=f"{int(round(a * 1000)):,} m² ({pct_label}; {slope:.2f} dB/10m)",
-                color=colors[pct_label],
-                lw=2.5,
-            )
-
-        ax.set_xlabel("Distance (10 m units)")
-        ax.set_ylabel("ΔLAeq (dB)")
-        ax.legend(frameon=False, fontsize=9)
-        add_reference_line(
-            ax,
-            0,
-            "h",
-            color=COLORS["highlight"],
-            linestyle="--",
-            linewidth=1,
-            alpha=0.6,
-        )
-        ax.set_xlim(0, 5)
-        ax.grid(False)
-        add_subplot_label(ax, "b")
-
-    plt.tight_layout()
-    save_figure(fig, "interaction_simple_slopes.png")
-    plt.close(fig)
+        plt.tight_layout()
+        save_figure(fig, "interaction_simple_slopes.png")
+        plt.close(fig)
 
     # =========================================================================
     # Summary
